@@ -1,6 +1,6 @@
 _base_ = ['./yolov12_n_syncbn_fast_8xb16-500e_coco.py']
 
-data_root = '../datasets/dota_yolo_format/' 
+data_root = '../datasets/dota_yolo_split_1024/' 
 
 train_ann_file = 'train/annotations/train.json'
 train_data_prefix = 'train/images/'
