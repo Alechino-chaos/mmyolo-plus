@@ -154,11 +154,16 @@ class RTMDetRotatedSepBNHeadModule(RTMDetSepBNHeadModule):
             for reg_layer in self.reg_convs[idx]:
                 reg_feat = reg_layer(reg_feat)
 
-            # The four regression channels represent distances to box sides.
-            # Keep them strictly positive so randomly initialized predictions
-            # cannot form degenerate boxes in rotated IoU kernels.
-            reg_dist = F.softplus(self.rtm_reg[idx](reg_feat)).clamp_min(1e-4)
-            angle_pred = self.rtm_ang[idx](reg_feat)
+            # Run the final rotated geometry projections in FP32. Casting
+            # after these convolutions is too late if AMP has already created
+            # an Inf/NaN on pre-Ampere GPUs.
+            with torch.cuda.amp.autocast(enabled=False):
+                reg_feat_fp32 = reg_feat.float()
+                # The four regression channels represent distances to box
+                # sides and must stay strictly positive.
+                reg_dist = F.softplus(
+                    self.rtm_reg[idx](reg_feat_fp32)).clamp_min(1e-4)
+                angle_pred = self.rtm_ang[idx](reg_feat_fp32)
 
             cls_scores.append(cls_score)
             bbox_preds.append(reg_dist)
