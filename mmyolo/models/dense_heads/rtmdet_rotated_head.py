@@ -541,7 +541,9 @@ class RTMDetRotatedHead(RTMDetHead):
 
         gt_info = gt_instances_preprocess(batch_gt_instances, num_imgs)
         gt_labels = gt_info[:, :, :1]
-        gt_bboxes = gt_info[:, :, 1:]  # xywha
+        # Keep rotated geometry in FP32. The MMCV rotated IoU kernels can
+        # produce NaNs for FP16 boxes, especially on pre-Ampere GPUs.
+        gt_bboxes = gt_info[:, :, 1:].float()  # xywha
         pad_bbox_flag = (gt_bboxes.sum(-1, keepdim=True) > 0).float()
 
         device = cls_scores[0].device
@@ -563,13 +565,13 @@ class RTMDetRotatedHead(RTMDetHead):
         flatten_tblrs = torch.cat([
             bbox_pred.permute(0, 2, 3, 1).reshape(num_imgs, -1, 4)
             for bbox_pred in bbox_preds
-        ], 1)
+        ], 1).float()
         flatten_tblrs = flatten_tblrs * self.flatten_priors_train[..., -1,
                                                                   None]
         flatten_angles = torch.cat([
             angle_pred.permute(0, 2, 3, 1).reshape(
                 num_imgs, -1, self.angle_out_dim) for angle_pred in angle_preds
-        ], 1)
+        ], 1).float()
         flatten_decoded_angle = self.angle_coder.decode(
             flatten_angles, keepdim=True)
         flatten_tblra = torch.cat([flatten_tblrs, flatten_decoded_angle],
@@ -578,12 +580,19 @@ class RTMDetRotatedHead(RTMDetHead):
             self.flatten_priors_train[..., :2],
             flatten_tblra,
             angle_version=self.angle_version)
+        # Randomly initialized distance predictions may decode to non-positive
+        # widths or heights. Rotated IoU requires valid box dimensions.
+        flatten_rbboxes = torch.cat(
+            [flatten_rbboxes[..., :2],
+             flatten_rbboxes[..., 2:4].clamp_min(1e-4),
+             flatten_rbboxes[..., 4:]],
+            dim=-1)
         if self.use_hbbox_loss:
             flatten_hbboxes = distance2bbox(self.flatten_priors_train[..., :2],
                                             flatten_tblrs)
 
         assigned_result = self.assigner(flatten_rbboxes.detach(),
-                                        flatten_cls_scores.detach(),
+                                        flatten_cls_scores.detach().float(),
                                         self.flatten_priors_train, gt_labels,
                                         gt_bboxes, pad_bbox_flag)
 
