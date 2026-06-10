@@ -6,6 +6,8 @@ from .yolo_bricks import (BepC3StageBlock, BiFusion, CSPLayerWithTwoConv,
                           MaxPoolAndStrideConvBlock, PPYOLOEBasicBlock,
                           RepStageBlock, RepVGGBlock, SPPFBottleneck,
                           SPPFCSPBlock, TinyDownSampleBlock)
+from .yolov10_bricks import (YOLOv10C2fCIB, YOLOv10CIB, YOLOv10PSA,
+                             YOLOv10SCDown)
 from .yolov12_bricks import (A2C2f, AAttn, ABlock, C3k, C3k2)
 
 __all__ = [
@@ -14,5 +16,6 @@ __all__ = [
     'PPYOLOEBasicBlock', 'EffectiveSELayer', 'TinyDownSampleBlock',
     'EELANBlock', 'ImplicitA', 'ImplicitM', 'BepC3StageBlock',
     'CSPLayerWithTwoConv', 'DarknetBottleneck', 'BiFusion',
+    'YOLOv10CIB', 'YOLOv10C2fCIB', 'YOLOv10SCDown', 'YOLOv10PSA',
     'AAttn', 'ABlock', 'A2C2f', 'C3k', 'C3k2'
 ]
