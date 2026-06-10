@@ -1,5 +1,15 @@
 _base_ = '../../_base_/default_runtime.py'
 
+# MMYOLO only registers MMDet/MMYOLO modules by default. Explicitly import
+# MMRotate components used by the rotated dataset, transforms, model and
+# visualizer before Runner builds them.
+custom_imports = dict(
+    imports=[
+        'mmrotate.datasets', 'mmrotate.models', 'mmrotate.evaluation',
+        'mmrotate.visualization'
+    ],
+    allow_failed_imports=False)
+
 # ======================== Frequently modified parameters =====================
 # ----- data related -----
 data_root = 'data/DOTA1_yolo12x_hbb_split1024/'
