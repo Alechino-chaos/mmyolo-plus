@@ -9,6 +9,8 @@ rotated head on DOTA1.0 15-class oriented detection.
   `images/train`, `images/val`, `labels/train`, and `labels/val`.
 - Labels use normalized `class cx cy width height` format.
 - DOTA1.0 has 15 classes and no `container-crane`.
+- The supplied dataset contains class ID 15 (`container-crane`); the dataset
+  adapter ignores that ID so experiments remain on the DOTA1.0 0-14 protocol.
 - Input: `640x640`.
 - Schedule: `80` epochs, random initialization, `load_from = None`.
 - Default batch: `3 GPUs x 4 images/GPU`, `accumulative_counts=3`,

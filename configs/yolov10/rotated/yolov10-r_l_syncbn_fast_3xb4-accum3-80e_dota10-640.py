@@ -20,6 +20,9 @@ val_data_prefix = 'images/val/'
 submission_dir = './work_dirs/{{fileBasenameNoExtension}}/submission'
 
 num_classes = 15
+# The source YAML declares container-crane as class 15. Ignore it to keep the
+# experiment on the official DOTA1.0 15-class protocol (class IDs 0-14).
+ignore_class_ids = [15]
 metainfo = dict(
     classes=(
         'plane', 'baseball-diamond', 'bridge', 'ground-track-field',
@@ -206,6 +209,7 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=metainfo,
+        ignore_class_ids=ignore_class_ids,
         ann_file=train_ann_file,
         data_prefix=dict(img_path=train_data_prefix),
         filter_cfg=dict(filter_empty_gt=True),
@@ -222,6 +226,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=metainfo,
+        ignore_class_ids=ignore_class_ids,
         ann_file=val_ann_file,
         data_prefix=dict(img_path=val_data_prefix),
         test_mode=True,

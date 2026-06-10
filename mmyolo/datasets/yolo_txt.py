@@ -3,7 +3,7 @@
 
 import os
 import os.path as osp
-from typing import List
+from typing import List, Sequence
 
 import mmcv
 
@@ -25,6 +25,13 @@ class YOLOv5YOLOTxtDataset(BatchShapePolicyDataset):
 
     METAINFO = {}
     IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.tif', '.tiff')
+
+    def __init__(self,
+                 *args,
+                 ignore_class_ids: Sequence[int] = (),
+                 **kwargs):
+        self.ignore_class_ids = set(ignore_class_ids)
+        super().__init__(*args, **kwargs)
 
     def load_data_list(self) -> List[dict]:
         img_dir = self.data_prefix.get(
@@ -80,6 +87,8 @@ class YOLOv5YOLOTxtDataset(BatchShapePolicyDataset):
                         f'YOLO HBB labels, but got {len(values)}.')
 
                 class_id = int(values[0])
+                if class_id in self.ignore_class_ids:
+                    continue
                 if class_id < 0 or (num_classes and class_id >= num_classes):
                     raise ValueError(
                         f'{label_path}:{line_number} has invalid class id '
