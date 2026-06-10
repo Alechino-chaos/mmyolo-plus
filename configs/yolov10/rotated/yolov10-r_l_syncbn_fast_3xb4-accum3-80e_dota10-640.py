@@ -12,7 +12,7 @@ custom_imports = dict(
 
 # ======================== Frequently modified parameters =====================
 # ----- data related -----
-data_root = 'data/DOTA1_yolo12x_hbb_split1024/'
+data_root = '/share/home/luofeiran/DOTA1_yolo12x_hbb_split1024_gap200'
 train_ann_file = 'labels/train/'
 train_data_prefix = 'images/train/'
 val_ann_file = 'labels/val/'
