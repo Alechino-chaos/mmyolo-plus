@@ -5,6 +5,7 @@ from typing import List, Optional, Sequence, Tuple
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from mmdet.models.utils import filter_scores_and_topk
 from mmdet.structures.bbox import HorizontalBoxes, distance2bbox
 from mmdet.structures.bbox.transforms import bbox_cxcywh_to_xyxy, scale_boxes
@@ -153,7 +154,10 @@ class RTMDetRotatedSepBNHeadModule(RTMDetSepBNHeadModule):
             for reg_layer in self.reg_convs[idx]:
                 reg_feat = reg_layer(reg_feat)
 
-            reg_dist = self.rtm_reg[idx](reg_feat)
+            # The four regression channels represent distances to box sides.
+            # Keep them strictly positive so randomly initialized predictions
+            # cannot form degenerate boxes in rotated IoU kernels.
+            reg_dist = F.softplus(self.rtm_reg[idx](reg_feat)).clamp_min(1e-4)
             angle_pred = self.rtm_ang[idx](reg_feat)
 
             cls_scores.append(cls_score)
