@@ -15,6 +15,8 @@ rotated head on DOTA1.0 15-class oriented detection.
 - Schedule: `80` epochs, random initialization, `load_from = None`.
 - Default batch: `3 GPUs x 4 images/GPU`, `accumulative_counts=3`,
   effective batch `36`.
+- Precision: use FP32 on RTX 2080. Do not pass `--amp`; the rotated IoU
+  regression path is not numerically stable with FP16 on this GPU generation.
 - OOM fallback:
   - `l`: use `yolov10-r_l_syncbn_fast_3xb2-accum6-80e_dota10-640.py`.
   - `x`: first use `yolov10-r_x_syncbn_fast_3xb2-accum6-80e_dota10-640.py`.
@@ -33,13 +35,14 @@ orientation and therefore cannot reproduce official DOTA OBB evaluation.
 ## Commands
 
 ```bash
-bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_s_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3 --amp
-bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_m_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3 --amp
-bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_l_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3 --amp
-bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_x_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3 --amp
+bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_s_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3
+bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_m_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3
+bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_l_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3
+bash tools/dist_train.sh configs/yolov10/rotated/yolov10-r_x_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3
 ```
 
-Use fallback configs only after the matching default config OOMs.
+Use fallback configs only after the matching default config OOMs. Keep FP32
+and use the fallback accumulation settings to preserve effective batch 36.
 
 ## Measurement
 
