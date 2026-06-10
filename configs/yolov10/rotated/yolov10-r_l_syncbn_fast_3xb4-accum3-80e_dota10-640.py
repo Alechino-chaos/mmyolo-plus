@@ -5,8 +5,8 @@ _base_ = '../../_base_/default_runtime.py'
 # visualizer before Runner builds them.
 custom_imports = dict(
     imports=[
-        'mmrotate.datasets', 'mmrotate.models', 'mmrotate.evaluation',
-        'mmrotate.visualization'
+        'mmyolo.utils.mmrotate_compat', 'mmrotate.datasets',
+        'mmrotate.models', 'mmrotate.evaluation', 'mmrotate.visualization'
     ],
     allow_failed_imports=False)
 
