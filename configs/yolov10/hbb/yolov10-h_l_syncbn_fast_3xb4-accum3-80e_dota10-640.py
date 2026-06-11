@@ -142,9 +142,16 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile', backend_args=_base_.backend_args),
-    dict(type='LoadAnnotations', with_bbox=True, box_type='hbox'),
     dict(type='mmdet.Resize', scale=img_scale, keep_ratio=True),
     dict(type='mmdet.Pad', size=img_scale, pad_val=dict(img=(114, 114, 114))),
+    # VOCMetric reads GT directly from the packed data sample, while model
+    # predictions are rescaled to the original image. Load annotations after
+    # geometric transforms so evaluator GT also remains in original coords.
+    dict(
+        type='LoadAnnotations',
+        with_bbox=True,
+        box_type='hbox',
+        _scope_='mmdet'),
     dict(
         type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
@@ -247,4 +254,3 @@ test_cfg = dict(type='TestLoop')
 
 load_from = None
 resume = False
-
