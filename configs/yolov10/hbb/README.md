@@ -35,8 +35,11 @@ CUDA_VISIBLE_DEVICES=0,1,2 bash tools/dist_train.sh \
   configs/yolov10/hbb/yolov10-h_s_syncbn_fast_3xb4-accum3-80e_dota10-640.py 3
 ```
 
-Train in order `s -> m -> l -> x`. If FP32 OOMs, use the provided fallback:
+Train in order `s -> m -> l -> x`. Dense aerial batches can make the dynamic
+assigner use substantial memory even for the small model. If FP32 OOMs, use
+the provided fallback:
 
+- `s/m`: use `3xb2-accum6`, effective batch 36.
 - `l`: `3xb2-accum6`, effective batch 36.
 - `x`: first `3xb2-accum6`, then `3xb1-accum12`, effective batch 36.
 
@@ -50,4 +53,3 @@ python tools/analysis_tools/get_flops.py \
 
 Record the actual fallback, peak memory, runtime, best epoch, mAP@0.5 and the
 15 per-class AP values in `results_template.csv`.
-

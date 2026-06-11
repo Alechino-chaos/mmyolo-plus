@@ -248,8 +248,17 @@ class BatchDynamicSoftLabelAssigner(nn.Module):
         dynamic_ks = torch.clamp(topk_ious.sum(1).int(), min=1)
 
         num_gts = pad_bbox_flag.sum((1, 2)).int()
-        # sorting the batch cost matirx is faster than topk
-        _, sorted_indices = torch.sort(cost_matrix, dim=1)
+        # Dynamic-k never selects more than ``candidate_topk`` priors per GT.
+        # Sorting every prior creates a large int64 index tensor and can OOM
+        # on dense aerial batches. Selecting only the required lowest costs is
+        # equivalent while using substantially less temporary GPU memory.
+        max_dynamic_k = int(dynamic_ks.max().item())
+        _, sorted_indices = torch.topk(
+            cost_matrix,
+            k=max_dynamic_k,
+            dim=1,
+            largest=False,
+            sorted=True)
         for b in range(pad_bbox_flag.shape[0]):
             for gt_idx in range(num_gts[b]):
                 topk_ids = sorted_indices[b, :dynamic_ks[b, gt_idx], gt_idx]
