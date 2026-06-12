@@ -17,6 +17,21 @@ prediction, or HBB-to-OBB conversion.
 
 ## Smoke test
 
+Before training, audit the patch split. This checks same-name files, exact
+SHA-256 duplicates, and patches derived from the same source image ID. A
+non-zero exit status means the split must not be used for final metrics.
+
+```bash
+python tools/analysis_tools/check_yolo_split_leakage.py \
+  /share/home/luofeiran/DOTA1_yolo12x_hbb_split1024_gap200
+```
+
+Reports are written to
+`work_dirs/dataset_audits/DOTA1_yolo12x_hbb_split1024_gap200/`. The source ID
+overlap, image hash overlap, and same-name overlap must all be zero. If source
+IDs overlap, split the original DOTA images first and regenerate the patches;
+do not randomly split an already patched dataset.
+
 ```bash
 CUDA_VISIBLE_DEVICES=0,1,2 bash tools/dist_train.sh \
   configs/yolov10/hbb/yolov10-h_s_syncbn_fast_3xb4-accum3-80e_dota10-640.py \
