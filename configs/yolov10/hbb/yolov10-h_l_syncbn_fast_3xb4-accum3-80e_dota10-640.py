@@ -230,7 +230,7 @@ optim_wrapper = dict(
 
 default_hooks = dict(
     checkpoint=dict(
-        type='CheckpointHook',
+        type='SafeCheckpointHook',
         interval=val_interval,
         max_keep_ckpts=max_keep_ckpts,
         save_best='auto'))
