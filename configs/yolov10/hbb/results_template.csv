@@ -1,6 +1,5 @@
-model,params,FLOPs at 640,per_gpu_batch,accumulative_counts,effective_batch,peak GPU memory,training time,mAP@0.5,best epoch,plane,baseball-diamond,bridge,ground-track-field,small-vehicle,large-vehicle,ship,tennis-court,basketball-court,storage-tank,soccer-ball-field,roundabout,harbor,swimming-pool,helicopter
-yolov10-h_s,,,4,3,36,,,,,,,,,,,,,,,,,,,
-yolov10-h_m,,,4,3,36,,,,,,,,,,,,,,,,,,,
-yolov10-h_l,,,4,3,36,,,,,,,,,,,,,,,,,,,
-yolov10-h_x,,,4,3,36,,,,,,,,,,,,,,,,,,,
-
+model,params,FLOPs at 640,per_gpu_batch,accumulative_counts,effective_batch,peak GPU memory,training time,mAP@0.5,AP@0.75,VOC mAP@0.5:0.95,best epoch,plane,baseball-diamond,bridge,ground-track-field,small-vehicle,large-vehicle,ship,tennis-court,basketball-court,storage-tank,soccer-ball-field,roundabout,harbor,swimming-pool,helicopter
+yolov10-h_s,,,2,6,36,,,,,,,,,,,,,,,,,,,,,
+yolov10-h_m,,,2,6,36,,,,,,,,,,,,,,,,,,,,,
+yolov10-h_l,,,2,6,36,,,,,,,,,,,,,,,,,,,,,
+yolov10-h_x,,,2,6,36,,,,,,,,,,,,,,,,,,,,,

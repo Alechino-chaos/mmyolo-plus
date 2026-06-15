@@ -68,3 +68,19 @@ python tools/analysis_tools/get_flops.py \
 
 Record the actual fallback, peak memory, runtime, best epoch, mAP@0.5 and the
 15 per-class AP values in `results_template.csv`.
+
+### AP75 and AP50:95 re-evaluation
+
+Completed runs can be re-evaluated without retraining. The helper only accepts
+work directories whose logs contain the epoch-80 validation result, selects
+the saved best checkpoint, and evaluates IoU thresholds 0.50 through 0.95:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2 python \
+  tools/analysis_tools/eval_yolov10_hbb_best.py --sizes s m l x --gpus 3
+```
+
+Use `--dry-run` first to inspect checkpoint selection. Results are written to
+`work_dirs/yolov10_hbb_ap50_95_summary.csv`. `AP75` is the 0.75 threshold
+result. `voc_map50_95` is the mean VOC AP over ten IoU thresholds from 0.50 to
+0.95; it is not the full COCO area/maxDets metric.
